@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 6);
+---
+
+<BaseLayout>
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+    <div class="max-w-3xl">
+      <div class="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full mb-6">
+        <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></span>
+        Hands-on AI coding tools coverage
+      </div>
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05] mb-6">
+        AI coding tools,<br />
+        tested in the real world.
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-600 leading-relaxed mb-8">
+        In-depth reviews, honest comparisons, and practical configurations for Cursor, Claude Code, GitHub Copilot, Windsurf, and the rest — so you can pick the right tool without wasting a week trying all of them.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/blog/" class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
+          Read the latest
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a href="/about/" class="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium">
+          What is Arsovo?
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {posts.length > 0 && (
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
+      <div class="flex items-baseline justify-between mb-8">
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900">Latest writing</h2>
+        <a href="/blog/" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">All posts →</a>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {posts.map((post) => <PostCard {post} />)}
+      </div>
+    </section>
+  )}
+</BaseLayout>

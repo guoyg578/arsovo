@@ -1,0 +1,36 @@
+---
+import { SITE } from '@/consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-200 mt-24 py-12">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 grid gap-8 sm:grid-cols-3 text-sm">
+    <div>
+      <div class="font-bold text-slate-900 mb-2">{SITE.name}</div>
+      <p class="text-slate-600 leading-relaxed">
+        Hands-on reviews and comparisons of AI coding tools — from a developer who actually uses them daily.
+      </p>
+    </div>
+    <div>
+      <div class="font-semibold text-slate-900 mb-3">Explore</div>
+      <ul class="space-y-2 text-slate-600">
+        <li><a href="/blog/" class="hover:text-slate-900">Blog</a></li>
+        <li><a href="/about/" class="hover:text-slate-900">About</a></li>
+        <li><a href="/contact/" class="hover:text-slate-900">Contact</a></li>
+        <li><a href="/rss.xml" class="hover:text-slate-900">RSS</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="font-semibold text-slate-900 mb-3">Legal</div>
+      <ul class="space-y-2 text-slate-600">
+        <li><a href="/privacy/" class="hover:text-slate-900">Privacy Policy</a></li>
+        <li><a href="/terms/" class="hover:text-slate-900">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 mt-10 pt-6 border-t border-slate-100 text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <span>&copy; {year} {SITE.name}. All rights reserved.</span>
+    <span>Built with Astro · Deployed on Cloudflare</span>
+  </div>
+</footer>

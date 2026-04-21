@@ -1,0 +1,22 @@
+---
+// Client-side image zoom. Applies to any <img data-zoomable> or <img> inside .prose.
+---
+
+<script>
+  import mediumZoom from 'medium-zoom';
+
+  const init = () => {
+    const selector = '.prose img, [data-zoomable]';
+    mediumZoom(selector, {
+      background: 'rgba(15, 23, 42, 0.94)',
+      margin: 32,
+      scrollOffset: 0,
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>

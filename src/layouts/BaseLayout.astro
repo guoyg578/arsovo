@@ -1,0 +1,30 @@
+---
+import '@/styles/global.css';
+import SEO from '@/components/SEO.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  article?: boolean;
+  publishedTime?: Date;
+}
+
+const { title, description, image, article, publishedTime } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <SEO {title} {description} {image} {article} {publishedTime} />
+  </head>
+  <body class="bg-white text-slate-800 min-h-screen flex flex-col antialiased">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

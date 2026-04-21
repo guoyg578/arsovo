@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata | string;
+  alt: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+  zoomable?: boolean;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  width,
+  height,
+  zoomable = true,
+} = Astro.props;
+
+const isRemote = typeof src === 'string';
+---
+
+<figure class="my-8">
+  {isRemote ? (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading="lazy"
+      decoding="async"
+      data-zoomable={zoomable ? '' : undefined}
+      class="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
+    />
+  ) : (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading="lazy"
+      decoding="async"
+      data-zoomable={zoomable ? '' : undefined}
+      class="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
+    />
+  )}
+  {caption && (
+    <figcaption class="text-sm text-slate-500 text-center mt-3 italic">
+      {caption}
+    </figcaption>
+  )}
+</figure>

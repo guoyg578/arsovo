@@ -1,0 +1,151 @@
+---
+title: "Media Playground — How to Use Images, Video, and Code in Arsovo Posts"
+description: "A reference post that demonstrates every media component available in Arsovo articles: optimized images with captions, YouTube embeds, and syntax-highlighted code with line highlighting."
+pubDate: 2026-04-22
+tags: ["meta", "reference"]
+---
+
+import Figure from '@/components/Figure.astro';
+import YouTube from '@/components/YouTube.astro';
+
+This post is a working reference for anyone writing on Arsovo. Every media capability the site supports appears below, with the exact syntax needed to reproduce it.
+
+## Images
+
+The simplest option is plain Markdown. Images show up inside the article body and are automatically zoomable on click — a lightbox overlay opens so readers can inspect details.
+
+```md
+![Short alt description](https://placehold.co/1200x600/0f172a/e2e8f0?text=Arsovo+screenshot)
+```
+
+Result:
+
+![Arsovo placeholder screenshot](https://placehold.co/1200x600/0f172a/e2e8f0?text=Arsovo+screenshot)
+
+### Figure with caption
+
+For screenshots that deserve a caption (which is most of them in a review), import the `<Figure>` component. It renders the same image but with a centered italic caption beneath — also zoomable.
+
+```mdx
+<Figure
+  src="https://placehold.co/1600x900/1e3a8a/ffffff?text=Cursor+autocomplete"
+  alt="Cursor suggesting a React hook refactor"
+  caption="Cursor's chat panel suggesting an extraction of state logic into a custom hook."
+/>
+```
+
+<Figure
+  src="https://placehold.co/1600x900/1e3a8a/ffffff?text=Cursor+autocomplete"
+  alt="Cursor suggesting a React hook refactor"
+  caption="Cursor's chat panel suggesting an extraction of state logic into a custom hook."
+/>
+
+When you use a local image placed alongside the article, import it at the top of the MDX file and pass the imported module to `src`:
+
+```mdx
+import heroImage from './_images/cursor-review-hero.png';
+
+<Figure src={heroImage} alt="..." caption="..." />
+```
+
+Astro will automatically generate optimized WebP variants, correct `srcset`, and lazy-load below-the-fold images.
+
+## YouTube embeds
+
+The `<YouTube>` component is lazy-loaded. It renders the thumbnail as an image; the full YouTube iframe only loads once the reader clicks play. This keeps your page fast and your Core Web Vitals happy — which matters for AdSense revenue.
+
+```mdx
+<YouTube id="dQw4w9WgXcQ" title="Never Gonna Give You Up" />
+```
+
+<YouTube id="dQw4w9WgXcQ" title="Never Gonna Give You Up" />
+
+## Code blocks
+
+Standard triple-backtick blocks get syntax highlighting through `rehype-pretty-code` with a GitHub theme. Specify the language for coloring:
+
+````md
+```ts
+interface Review {
+  tool: string;
+  verdict: 'buy' | 'skip';
+}
+
+const claude: Review = { tool: 'Claude Code', verdict: 'buy' };
+```
+````
+
+Renders as:
+
+```ts
+interface Review {
+  tool: string;
+  verdict: 'buy' | 'skip';
+}
+
+const claude: Review = { tool: 'Claude Code', verdict: 'buy' };
+```
+
+### Highlighted lines
+
+Add `{2,4-5}` after the language to highlight specific lines — useful when you want to draw the reader's eye to the change you're talking about.
+
+````md
+```js {2,4-5}
+function greet(name) {
+  const greeting = `Hello, ${name}!`;
+  console.log(greeting);
+  // the lines below get a subtle highlight
+  return greeting;
+}
+```
+````
+
+```js {2,4-5}
+function greet(name) {
+  const greeting = `Hello, ${name}!`;
+  console.log(greeting);
+  // the lines below get a subtle highlight
+  return greeting;
+}
+```
+
+### Code block with a title
+
+Add `title="..."` after the language to give the block a filename-style header.
+
+````md
+```bash title="Terminal"
+npm run dev
+# → Local: http://localhost:4321/
+```
+````
+
+```bash title="Terminal"
+npm run dev
+# → Local: http://localhost:4321/
+```
+
+### Line numbers
+
+Add `showLineNumbers` to display numbers in the gutter.
+
+````md
+```tsx showLineNumbers
+export function Button({ children }: { children: React.ReactNode }) {
+  return <button className="px-4 py-2 rounded-md">{children}</button>;
+}
+```
+````
+
+```tsx showLineNumbers
+export function Button({ children }: { children: React.ReactNode }) {
+  return <button className="px-4 py-2 rounded-md">{children}</button>;
+}
+```
+
+## That's everything
+
+A normal review post uses maybe four or five images, one YouTube clip, and a handful of highlighted code blocks. Everything on this page is ready to drop into any `.mdx` file in `src/content/blog/`. For plain `.md` files, Markdown images and fenced code blocks still work — you just don't get the `<Figure>` caption or `<YouTube>` helper.
+
+Keep images under ~300 KB each after compression, prefer the WebP format, and write meaningful alt text — all three nudge your Core Web Vitals, SEO, and advertising fill rate in the right direction.

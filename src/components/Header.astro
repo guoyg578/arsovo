@@ -1,0 +1,33 @@
+---
+import { SITE, NAV_LINKS } from '@/consts';
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) => {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+};
+---
+
+<header class="border-b border-slate-200 bg-white/80 backdrop-blur sticky top-0 z-50">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+      <span class="inline-block w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-blue-600"></span>
+      {SITE.name}
+    </a>
+    <nav class="flex items-center gap-1 sm:gap-2 text-sm">
+      {NAV_LINKS.map((link) => (
+        <a
+          href={link.href}
+          class:list={[
+            'px-3 py-2 rounded-md transition-colors',
+            isActive(link.href)
+              ? 'text-slate-900 font-semibold bg-slate-100'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>

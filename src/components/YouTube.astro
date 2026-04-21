@@ -1,0 +1,66 @@
+---
+interface Props {
+  id: string;
+  title?: string;
+  params?: string;
+}
+
+const { id, title = 'YouTube video', params = '' } = Astro.props;
+const thumbnailUrl = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+const fallbackThumb = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+const embedSrc = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0${params ? `&${params}` : ''}`;
+---
+
+<div
+  class="yt-lite relative aspect-video my-8 rounded-xl overflow-hidden bg-black cursor-pointer group border border-slate-200"
+  data-embed={embedSrc}
+  data-title={title}
+  role="button"
+  tabindex="0"
+  aria-label={`Play video: ${title}`}
+>
+  <img
+    src={thumbnailUrl}
+    onerror={`this.onerror=null;this.src='${fallbackThumb}';`}
+    alt={title}
+    loading="lazy"
+    decoding="async"
+    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+  />
+  <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 transition-colors">
+    <svg width="72" height="52" viewBox="0 0 72 52" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-lg">
+      <rect x="0" y="0" width="72" height="52" rx="12" fill="#ff0000" fill-opacity="0.92" />
+      <path d="M30 16 L30 36 L48 26 Z" fill="white" />
+    </svg>
+  </div>
+</div>
+
+<script>
+  function activate(el: HTMLElement) {
+    const embedUrl = el.getAttribute('data-embed');
+    const title = el.getAttribute('data-title') ?? 'YouTube video';
+    if (!embedUrl) return;
+    const iframe = document.createElement('iframe');
+    iframe.src = embedUrl;
+    iframe.title = title;
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute(
+      'allow',
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+    );
+    iframe.setAttribute('allowfullscreen', 'true');
+    iframe.className = 'w-full h-full border-0';
+    el.innerHTML = '';
+    el.appendChild(iframe);
+  }
+
+  document.querySelectorAll<HTMLElement>('.yt-lite').forEach((el) => {
+    el.addEventListener('click', () => activate(el));
+    el.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activate(el);
+      }
+    });
+  });
+</script>

@@ -1,0 +1,49 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About — Arsovo"
+  description="What Arsovo is, who writes it, and how we evaluate AI coding tools."
+>
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 mb-6">About Arsovo</h1>
+    <div class="prose prose-slate max-w-none text-slate-800">
+      <p>
+        <strong>Arsovo</strong> is an independent publication about AI-assisted software development. We test
+        tools like Cursor, Claude Code, GitHub Copilot, Windsurf, and other AI coding assistants on real
+        projects — then write down what actually works, what doesn't, and how to configure each one for
+        serious day-to-day use.
+      </p>
+
+      <h2>What you'll find here</h2>
+      <ul>
+        <li><strong>Hands-on reviews</strong> written after weeks of daily use, not 30-minute demos.</li>
+        <li><strong>Head-to-head comparisons</strong> on specific tasks (refactoring, testing, code review, scaffolding).</li>
+        <li><strong>Configurations and prompts</strong> you can copy into your own setup.</li>
+        <li><strong>Clear recommendations</strong> for which tool fits which workflow.</li>
+      </ul>
+
+      <h2>How we evaluate tools</h2>
+      <p>
+        Every review uses the same rubric: onboarding friction, context-handling quality, suggestion
+        accuracy, cost, and long-session stability. We write down our actual prompts and outputs so you
+        can reproduce the test yourself.
+      </p>
+
+      <h2>Editorial independence</h2>
+      <p>
+        Arsovo is reader-supported. Some links on this site are affiliate links, which means we earn a
+        commission if you sign up for a paid plan through them — at no extra cost to you. Affiliate status
+        never affects which tools we recommend or how we rank them. If a tool is mediocre, we'll say so
+        whether or not it pays a commission.
+      </p>
+
+      <h2>Get in touch</h2>
+      <p>
+        Found something wrong? Want us to benchmark a specific tool? Reach out via the
+        <a href="/contact/">contact page</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

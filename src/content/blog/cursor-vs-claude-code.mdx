@@ -1,0 +1,189 @@
+---
+title: "Cursor vs Claude Code: An Honest 30-Day Side-by-Side Comparison (2026)"
+description: "I spent thirty days switching between Cursor and Claude Code on the same real projects. Here's which one wins on setup, debugging, refactoring, long sessions, and price — with concrete examples and no hype."
+pubDate: 2026-04-23
+tags: ["reviews", "cursor", "claude-code", "ai-coding"]
+---
+
+import Figure from '@/components/Figure.astro';
+
+If you're paying for an AI coding tool in 2026, the decision almost always comes down to two names: **Cursor** and **Claude Code**. They take very different shapes — one is an IDE, the other is a terminal agent — but in practice they compete for the same slot in your workflow and the same line item on your credit card.
+
+I ran both of them for thirty days on the same projects: this Astro/TypeScript blog, a mid-size Go backend I maintain, and an old Python scraper that needed a serious refactor. Same tasks, same prompts where possible, same codebases. This is what actually happened.
+
+## TL;DR verdict
+
+<Figure
+  src="https://placehold.co/1600x700/0f172a/e2e8f0?text=Cursor+vs+Claude+Code+—+Verdict"
+  alt="Summary comparison of Cursor and Claude Code"
+  caption="The quick answer — full reasoning below."
+/>
+
+- **Pick Cursor if** you live in an IDE, want inline tab-to-accept completions, and value reviewing multi-file diffs before applying them.
+- **Pick Claude Code if** you want an agent that owns a task end-to-end — reads files, runs tests, iterates until it works — and you're comfortable driving from a terminal or IDE side panel.
+- **Most power users end up paying for both.** They're complementary, not redundant. If I had to cut one, I'd keep Claude Code for heavy lifting and use VS Code with a lightweight completion tool as a sidekick.
+
+## How I tested
+
+No synthetic benchmarks. Each tool got the same real work across four task categories:
+
+1. **Greenfield feature** — build a tag page for this very blog from zero.
+2. **Debug a known bug** — a Cloudflare redirect rule causing an infinite loop on a custom domain.
+3. **Cross-file refactor** — rename a function used in eight files and migrate its signature.
+4. **Reading unfamiliar code** — drop into an open-source project I'd never touched and explain its architecture.
+
+For each task I wrote down: setup time, how many prompts to a working result, how many times I had to correct or revert, and whether the final output needed cleanup before commit.
+
+Both tools got the real paid subscription. No comps, no free tier, no early-access tricks.
+
+## Setup and pricing (April 2026)
+
+```md title="Pricing snapshot (monthly)"
+Cursor Pro              $20
+Cursor Business         $40  per user
+Claude Pro              $20  includes basic Claude Code access
+Claude Max (5x)         $100
+Claude Max (20x)        $200
+Claude API (usage)      pay as you go
+```
+
+**Cursor** is a VS Code fork. You install it, sign in, and it works exactly like VS Code with an extra chat panel and extra inline completions. Migration takes under five minutes if you're already on VS Code — your settings, themes, and most extensions transfer directly.
+
+**Claude Code** is a CLI. You install it globally, run `claude` inside any project directory, and you're in an interactive session:
+
+```bash title="Terminal"
+npm i -g @anthropic-ai/claude-code
+cd my-project
+claude
+```
+
+There are also official IDE extensions for VS Code and JetBrains that surface the same agent inside a side panel. The agent is identical either way — you're just choosing a UI shell.
+
+Cursor's pricing is flat and predictable. Claude Code's real cost depends on how hard you push it — heavy use on the Max 20x plan is noticeably cheaper than burning API credits directly, but a light user on Claude Pro can get by just fine.
+
+## Task 1 — Greenfield feature
+
+**Job:** Add a `/tags/[tag]` page to an Astro 5 blog that lists all posts with a given tag. Should generate static routes from the existing content collection.
+
+### Claude Code
+
+<Figure
+  src="https://placehold.co/1600x900/1e293b/e2e8f0?text=Claude+Code+reading+content+schema"
+  alt="Claude Code exploring the content collection schema"
+  caption="Claude Code reading the content collection config before writing any code."
+/>
+
+I asked: *"Add a tag index at /tags and a dynamic /tags/[tag] page that lists posts with that tag, using the existing content collection."*
+
+It read `src/content.config.ts` on its own, noticed the `tags` field on the blog schema, generated both files, and then ran `npm run build` to verify routes were emitted correctly. Three prompts total, zero manual corrections, working on first commit.
+
+The thing that mattered was not speed — it was that the agent *verified its own work*. The build step caught a missing import before I did. That verification loop is the single feature that keeps me paying for Claude Code.
+
+### Cursor
+
+Cursor's Composer handles the same task well, but the shape is different: you describe the change, Composer proposes a multi-file diff, you review and apply. It took four prompts in my run, with one manual fix — the dynamic route glob didn't match the MDX files until I corrected the pattern. The review UX, on the other hand, is genuinely pleasant: side-by-side diffs, hunk-level accept/reject.
+
+**Task 1 winner:** Claude Code, on verification alone. Cursor is close on the happy path but doesn't close the loop.
+
+## Task 2 — Debug a real bug
+
+**Job:** A Cloudflare Redirect Rule meant to send `www.arsovo.com` to `arsovo.com` was redirecting the apex domain to itself, causing an infinite loop. All I had was the browser symptom ("too many redirects") and a screenshot of the rule config.
+
+### Claude Code
+
+I pasted the screenshot and asked what was wrong. Claude Code doesn't have live access to my Cloudflare dashboard, but it read the rule from the image, noticed the match criteria was set to "All incoming requests" rather than scoped to `www.arsovo.com`, and explained exactly why `wildcard_replace` on an already-apex host would emit an unchanged URL with a 301 — that's the loop. It handed me the corrected filter expression:
+
+```txt title="Corrected custom filter"
+http.host eq "www.arsovo.com"
+```
+
+Two minutes, one prompt. That class of bug — subtle, config-level, *not* in the code — is where I've found Claude Code punches hardest. It's also a class of bug that breaks most AI coding tools, because the signal lives in a screenshot or external dashboard, not in the repo.
+
+### Cursor
+
+Cursor's default chat panel didn't accept the screenshot attachment in my build, so I had to transcribe the rule as prose before asking the question. It reached the same answer in two prompts. Good answer, clunkier path.
+
+**Task 2 winner:** Tie on answer quality, Claude Code ahead on multimodal input — screenshots are how config bugs actually show up in practice.
+
+## Task 3 — Cross-file refactor
+
+**Job:** Rename `formatDate(date: Date): string` to `formatPubDate(date: Date, locale?: string): string` and update all eight call sites, without breaking anything.
+
+### Claude Code
+
+<Figure
+  src="https://placehold.co/1600x900/1e293b/e2e8f0?text=Claude+Code+cross-file+refactor+diff"
+  alt="Claude Code showing the refactor diff across multiple files"
+  caption="Claude Code surfacing the full diff across eight files before applying any changes."
+/>
+
+It ran `grep` for the identifier, found all call sites — including one embedded in an Astro component's frontmatter that's easy to miss with a naive search — proposed the new signature with a sensible default for `locale`, and applied the edits in a single batched pass.
+
+It also asked one genuinely useful clarifying question:
+
+> Call sites currently pass no locale. Do you want me to default to `'en-US'` in the function body, or update each call site to pass it explicitly?
+
+That's the kind of question a thoughtful human reviewer would ask. I picked the default. One prompt, one clarification, clean commit.
+
+### Cursor
+
+Cursor's Composer is built for exactly this and handles it well. The review UI is, honestly, nicer than Claude Code's terminal diff — you can scroll through the eight files side by side and reject individual hunks. What it missed in my run was the Astro frontmatter reference, which I caught in the diff review before applying. Would have shipped a broken build otherwise.
+
+**Task 3 winner:** Leaning Claude Code on thoroughness (it found the frontmatter reference unprompted), but Cursor's Composer UI is genuinely better for *reviewing* the multi-file diff before you apply it. If you don't trust your AI, Cursor's UX is reassuring.
+
+## Task 4 — Reading unfamiliar code
+
+**Job:** Dropped into a ~30k-line open-source Rust project I'd never touched. Asked: *"How does request routing work here, and where would I add a new middleware layer?"*
+
+Both tools did fine. This is the commodity capability of 2026 — the underlying LLM dominates over the wrapper. If you pay $20 for Claude Pro or $20 for Cursor Pro, you're getting a model that can summarize an unfamiliar codebase well.
+
+The differences showed up at the margins:
+
+- **Cursor** was faster to answer because it indexes the whole workspace upfront. One prompt, a few seconds.
+- **Claude Code** was slower on the first prompt — it has to explore with `grep` and `read` — but its answer cited specific file paths with line numbers I could click straight into. By the fourth follow-up question, it had built a useful mental map and kept referring back to it.
+
+**Task 4 winner:** Cursor for "tell me something about this repo." Claude Code for "here's a precise question about a specific subsystem I want to modify."
+
+## Context handling and long sessions
+
+This is where the two tools diverge most, and it matters more than any single-task benchmark.
+
+**Cursor** is IDE-native. Context is whatever you `@`-mention plus the open tab. There's no persistent memory across sessions — every conversation starts cold. You develop a habit of pinning key files with `@` at the start of each chat.
+
+**Claude Code** keeps a persistent, file-based memory layer. You can tell it something — *"we always use integration tests against a real Postgres, never a mock"* — and it surfaces that in future conversations on the same project. It also auto-compacts long conversations, so you can work on a single task for hours without hitting a context wall.
+
+For one-shot edits, this difference is invisible. For multi-hour sessions where you're iterating on a hard problem, it's the whole game. Every time I've stayed *inside* a Claude Code session for an afternoon, the output quality climbed as context accumulated. With Cursor, each fresh chat felt like starting from scratch.
+
+## Pricing math for a power user
+
+Here's what I actually spent in thirty days:
+
+- **Cursor Pro**: $20 flat. Hit the fast-request limit around day 22, then slow requests for the rest of the month — tolerable but noticeable.
+- **Claude Code on Max 20x**: $200. No throttling. I left sessions running during meetings and came back to finished work.
+
+For a full-time developer whose time is worth more than ten dollars an hour, the Max 20x tier pays for itself roughly every two working days. For hobby use, a student budget, or occasional side projects, Claude Pro at $20/month is plenty.
+
+One pattern I settled on and would recommend to most readers: **Cursor Pro + Claude Pro at $40/month total.** Use Cursor for inline completions and small multi-file edits inside the IDE. Use Claude Code for anything you'd describe as "a task" rather than "an edit" — building a feature, chasing a bug across systems, refactoring a subsystem.
+
+## What I'm not claiming
+
+A few honest caveats before the verdict:
+
+- This is a 30-day snapshot. Both tools ship weekly. Something in this post will be out of date within a month, and I'll update it.
+- I'm a backend-leaning full-stack developer. Frontend-only developers, data scientists, and ML engineers will weight different features.
+- I didn't test either tool's enterprise/team features (Cursor Business, Claude for Work). If you're buying seats for a team, that's a different review.
+- Neither tool is "the one that will replace developers." They're force multipliers for people who already know what they're trying to build.
+
+## The verdict
+
+**Cursor wins on**: fast workspace indexing, inline completions you can tab-accept, a polished IDE experience, predictable flat pricing, and the nicest multi-file diff review UX I've used.
+
+**Claude Code wins on**: agentic autonomy, verification (actually running tests and builds before claiming done), screenshot reading, persistent cross-session memory, long-session quality, and handling config-level bugs that live outside the code.
+
+If you're a developer who mostly needs a smarter autocomplete and occasional multi-file edits, Cursor is the simpler choice. If you want something that can genuinely own a task — read, edit, run, verify, iterate — and you're willing to give up the "everything in one IDE" feel, Claude Code is stronger.
+
+Most people I talked to while writing this ended up paying for both. That's not a cop-out — in April 2026 it's just the honest answer.
+
+---
+
+*I'll update this post monthly as both tools ship. If you spot something outdated or want me to benchmark a specific task, email [hello@arsovo.com](mailto:hello@arsovo.com).*

@@ -1,0 +1,61 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Lightbox from '@/components/Lightbox.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, tags } = post.data;
+
+const formattedPubDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={`${title} — Arsovo`} description={description} article publishedTime={pubDate}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <header class="mb-10 border-b border-slate-200 pb-8">
+      <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500 mb-4">
+        <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
+        {updatedDate && (
+          <>
+            <span>·</span>
+            <span>Updated {updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+          </>
+        )}
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 leading-tight mb-4">
+        {title}
+      </h1>
+      <p class="text-lg text-slate-600 leading-relaxed">{description}</p>
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-6">
+          {tags.map((tag) => (
+            <a
+              href={`/tags/${tag}/`}
+              class="text-xs px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full hover:bg-indigo-100 hover:text-indigo-700 transition-colors"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="prose prose-slate max-w-none text-slate-800">
+      <slot />
+    </div>
+
+    <!-- Ad placeholder (insert in-article AdSense unit here after approval) -->
+
+    <footer class="mt-16 pt-8 border-t border-slate-200">
+      <a href="/blog/" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">← Back to all posts</a>
+    </footer>
+  </article>
+  <Lightbox />
+</BaseLayout>
