@@ -1,5 +1,5 @@
 name = "arsovo"
-compatibility_date = "2026-04-22"
+compatibility_date = "2026-04-20"
 main = "src/worker.js"
 
 [assets]
