@@ -9,8 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "astro build && wrangler pages deploy --branch=production",
-    "deploy:preview": "astro build && wrangler pages deploy --branch=preview",
+    "deploy": "astro build && wrangler deploy",
     "cf:login": "wrangler login",
     "cf:whoami": "wrangler whoami"
   },
