@@ -9,7 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "astro build && wrangler deploy",
+    "deploy": "astro build && wrangler pages deploy dist --project-name=arsovo --branch=master --commit-dirty=true",
     "cf:login": "wrangler login",
     "cf:whoami": "wrangler whoami"
   },

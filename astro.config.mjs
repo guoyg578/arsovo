@@ -10,7 +10,6 @@ const prettyCodeOptions = {
   keepBackground: false,
   defaultLang: 'plaintext',
 };
-
 export default defineConfig({
   site: 'https://arsovo.com',
   integrations: [mdx(), sitemap()],
