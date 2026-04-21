@@ -147,7 +147,11 @@ body {
 }
 
 .prose img {
+  max-width: 100%;
+  height: auto;
   cursor: zoom-in;
+  margin: 1.5rem auto;
+  display: block;
 }
 
 .prose blockquote {
